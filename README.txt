@@ -1,5 +1,4 @@
 CS460 - Programming Assignment 4 - Symbol Table
-Name: Sam Tyler
 
 All features of the project requirements have been implemented
 ----------------------
