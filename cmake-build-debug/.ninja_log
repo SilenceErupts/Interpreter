@@ -1,0 +1,9 @@
+# ninja log v6
+6	334	7663056860370280	CMakeFiles/Interpreter.dir/Token.cpp.obj	9787f18e684d38b9
+14	378	7663056860450017	CMakeFiles/Interpreter.dir/TokenList.cpp.obj	6677c77942cf1a42
+12	400	7663056860430083	CMakeFiles/Interpreter.dir/IgnoreComments.cpp.obj	403b8bde9b357dc9
+3	502	7663056860340380	CMakeFiles/Interpreter.dir/main.cpp.obj	71ff5f9664ffc0de
+10	506	7663056860410147	CMakeFiles/Interpreter.dir/Tokenizer.cpp.obj	94cd21b357b7acdc
+21	590	7663056860519785	CMakeFiles/Interpreter.dir/SymbolTable.cpp.obj	980de6a658f6f116
+17	784	7663056860479917	CMakeFiles/Interpreter.dir/Parser.cpp.obj	a429ec4d92235820
+784	961	7663056868149330	Interpreter.exe	b32d03d769fee234

@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/Symbol_Table_Sam_Tyler.iml" filepath="$PROJECT_DIR$/.idea/Symbol_Table_Sam_Tyler.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/Interpreter.iml" filepath="$PROJECT_DIR$/.idea/Interpreter.iml" />
     </modules>
   </component>
 </project>
