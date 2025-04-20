@@ -1,4 +1,4 @@
-CS460 - Programming Assignment 4 - Symbol Table
+CS460 - Programming Assignment 5 - Abstract Syntax Tree
 
 Names: Shelby Anderson, Emilio Orozco, Jonathan Ramirez, Sam Tyler
 
