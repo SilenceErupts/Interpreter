@@ -91,8 +91,8 @@ Node* Parser::buildNode(const string &label, const vector<Node *> &children) {
         }
     }
     // Detect if same pointer appears twice
-    for (size_t i = 0; i < children.size(); ++i) {
-        for (size_t j = i + 1; j < children.size(); ++j) {
+    for (int i = 0; i < children.size(); ++i) {
+        for (int j = i + 1; j < children.size(); ++j) {
             if (children[i] == children[j]) {
                 std::cerr << "[ERROR] Duplicate child pointer detected in buildNode: " << label << "\n";
                 exit(1);
@@ -1218,7 +1218,9 @@ void Parser::collectTerminalNodes(Node* node, vector<Node*>& terminals) {
         return;
     }
     if (node->leftChild == nullptr) {
-        terminals.push_back(node);
+        if (node->name != "CompoundStatement") {
+            terminals.push_back(node);
+        }
     }
     collectTerminalNodes(node->leftChild, terminals);
     collectTerminalNodes(node->rightSibling, terminals);
@@ -1235,7 +1237,7 @@ Node* Parser::makeTerminalOnlyCST(Node* parseTreeRoot) {
     Node* newRoot = nullptr;
     Node* prevLastToken = nullptr;
     for (auto& [line, lineTokens] : tokensByLine) {
-        for (size_t i = 1; i < lineTokens.size(); ++i) {
+        for (int i = 1; i < lineTokens.size(); ++i) {
             lineTokens[i - 1]->rightSibling = lineTokens[i];
         }
         if (!lineTokens.empty()) {
@@ -1265,7 +1267,7 @@ Node* Parser::makeTerminalOnlyCST(Node* parseTreeRoot) {
         line += std::string(previousLineLength, ' ');
         // make current line
         std::string content;
-        for (size_t i = 0; i < terminals.size(); ++i) {
+        for (int i = 0; i < terminals.size(); ++i) {
             content += terminals[i];
             if (i + 1 < terminals.size()) content += " -> ";
         }

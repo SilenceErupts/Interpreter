@@ -1,9 +1,9 @@
 /** ***************************************************************************
-* @remark CS460: Programming Assignment 4 - Symbol Table                      *
+* @remark CS460: Programming Assignment 5 - Abstract Syntax Tree              *
  *                                                                            *
- * @author Sam Tyler                                                          *
+ * @author Shelby Anderson, Emilio Orozco, Jonathan Ramirez, Sam Tyler        *
  * @file  main.cpp                                                            *
- * @date  April 8, 2025                                                       *
+ * @date  April 22, 2025                                                      *
  *****************************************************************************/
 
 #include <iostream>
@@ -13,8 +13,10 @@
 #include "Parser.h"
 #include "Node.h"
 #include "SymbolTable.h"
+#include "AST.hpp"
+#include "ASTNode.hpp"
 
-void IgnoreComments(const std::string &inputFile, const std::string &preprocessedFile);
+void IgnoreComments(const string &inputFile, const string &preprocessedFile);
 
 int main(int argc, char* argv[]) {
     if (argc != 2) {
@@ -24,7 +26,7 @@ int main(int argc, char* argv[]) {
 
     // Remove Comments
     string inputFile = argv[1];
-    //string inputFile = "programming_assignment_4-test_file_2.c";
+    //string inputFile = "testCases/programming_assignment_5-test_file_2.c";
     string preprocessedFile = "nocomment_input.txt";
     IgnoreComments(inputFile, preprocessedFile);
 
@@ -77,7 +79,6 @@ int main(int argc, char* argv[]) {
     }
 
     //Debug Print:
-    //std::cout << "\nCollected " << tokens.size() << " tokens.\n";
     //tokens.printAllTokens();
 
     //Begin Recursive Descent Parsing (Create CST)
@@ -86,15 +87,20 @@ int main(int argc, char* argv[]) {
 
     //parser.graphicPrintTree(CST);
     //root->printTree();
-    //Node* terminalCST = parser.makeTerminalOnlyCST(CST);
+    Node* terminalCST = parser.makeTerminalOnlyCST(CST);
     //terminalCST->printTree();
 
     //Create Symbol Table
     SymbolTable symbolTable;
     traverseCST(CST, 0, symbolTable);
     if (!symbolError) {
-        symbolTable.print();
+        //symbolTable.print();
     }
+
+    //Create AST
+    AST ast(terminalCST, &symbolTable);
+    ASTNode* astRoot = ast.root();
+    ast.printAST(astRoot);
 
     /*if (root) {
         std::ofstream outFile("cst_output.txt");
