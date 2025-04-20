@@ -267,10 +267,10 @@ ASTNode* AST::createElse(Node*& CST) {
 }
 
 ASTNode* AST::createAssignment(Node*& CST) {
-    //std::cout << "DEBUG: CREATING assignment for " << CST->name << std::endl;
     int line = CST->lineNumber;
     ASTNode* astAssign = new ASTNode("ASSIGNMENT", line);
-    // check for array access
+
+    // // check for array access
     if (CST->rightSibling && CST->rightSibling->name == "[") {
         ASTNode* base = new ASTNode(CST->name, line);
         base->symbol = _symbolTable->lookup(CST->name, curScope);
@@ -293,9 +293,7 @@ ASTNode* AST::createAssignment(Node*& CST) {
         // normal variable
         std::string lhs = CST->name;
         Symbol* lhsSym = _symbolTable->lookup(lhs, curScope);
-        if (!lhsSym) {
-            lhsSym = _symbolTable->lookup(lhs, 0);
-        }
+        if (!lhsSym) lhsSym = _symbolTable->lookup(lhs, 0);
         if (!lhsSym) {
             std::cerr << "Debug: Assignment error: variable '" << lhs
                       << "' not found in scope " << curScope
@@ -305,40 +303,73 @@ ASTNode* AST::createAssignment(Node*& CST) {
         ASTNode* lhsNode = new ASTNode(lhs, line);
         lhsNode->symbol = lhsSym;
         addSibling(astAssign, lhsNode);
-
-        CST = CST->rightSibling; // =
+        CST = CST->rightSibling;
     }
+
+    // =
     if (!CST || CST->name != "=") {
         std::cerr << "Debug: Assignment error: expected '=' after LHS\n";
         return astAssign;
     }
     CST = CST->rightSibling;
-    // Case: char literal
+
+    // rhs
     if (CST && CST->name == "'") {
-        ASTNode* bq = new ASTNode("'", CST->lineNumber);
-        addSibling(astAssign, bq);
+        // Case: char literal
+        ASTNode* quote1 = new ASTNode("'", CST->lineNumber);
+        addSibling(astAssign, quote1);
 
-        Node* Char = CST->rightSibling;
-        if (Char) {
-            ASTNode* charLiteral = new ASTNode(Char->name, Char->lineNumber);
-            addSibling(astAssign, charLiteral);
-            CST = Char;
+        Node* inner = CST->rightSibling;
+        if (inner) {
+            ASTNode* charNode = new ASTNode(inner->name, inner->lineNumber);
+            addSibling(astAssign, charNode);
+            CST = inner;
 
-            Node* eq = CST->rightSibling;
-            if (eq && eq->name == "'") {
-                ASTNode* quote2 = new ASTNode("'", eq->lineNumber);
+            Node* closing = CST->rightSibling;
+            if (closing && closing->name == "'") {
+                ASTNode* quote2 = new ASTNode("'", closing->lineNumber);
                 addSibling(astAssign, quote2);
-                CST = eq->rightSibling;
+                CST = closing->rightSibling;
             }
         }
-    } else {
+    }
+    else if (CST && CST->rightSibling && CST->rightSibling->name == "(") {
+        // Case: Function Call
+        ASTNode* func = new ASTNode(CST->name, CST->lineNumber);
+        func->symbol = _symbolTable->lookup(CST->name, curScope);
+        addSibling(astAssign, func);
+
+        CST = CST->rightSibling; // now at "("
+        ASTNode* lparen = new ASTNode("(", CST->lineNumber);
+        addSibling(astAssign, lparen);
+        CST = CST->rightSibling;
+
+        // Arguments
+        while (CST && CST->name != ")") {
+            if (CST->name != ",") {
+                ASTNode* arg = new ASTNode(CST->name, CST->lineNumber);
+                if (auto sym = _symbolTable->lookup(CST->name, curScope))
+                    arg->symbol = sym;
+                addSibling(astAssign, arg);
+            }
+            CST = CST->rightSibling;
+        }
+
+        if (CST && CST->name == ")") {
+            ASTNode* rparen = new ASTNode(")", CST->lineNumber);
+            addSibling(astAssign, rparen);
+            CST = grabNext(CST);
+        }
+    }
+    else {
         ASTNode* rhs = infixToPostfixNumerical(CST, true);
         addSibling(astAssign, rhs);
     }
     ASTNode* assign = new ASTNode("=", line);
     addSibling(astAssign, assign);
-    if (CST && CST->name == ";")
+    if (CST && CST->name == ";") {
         CST = grabNext(CST);
+    }
     return astAssign;
 }
 
